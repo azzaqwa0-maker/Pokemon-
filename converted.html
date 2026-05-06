@@ -1,0 +1,222 @@
+<p>
+    import tkinter as tk
+</p>
+<p>
+    from tkinter import messagebox
+</p>
+<p>
+    from reportlab.lib.pagesizes import letter
+</p>
+<p>
+    from reportlab.pdfgen import canvas
+</p>
+<p>
+    stok_unknown = 1
+</p>
+<p>
+    transaksi = []
+</p>
+<p>
+    def tambah_kartu():
+</p>
+<p>
+        global stok_unknown
+</p>
+<p>
+        tipe = var_tipe.get()
+</p>
+<p>
+        if tipe == "":
+</p>
+<p>
+            messagebox.showwarning("Peringatan", "Pilih tipe kartu dulu!")
+</p>
+<p>
+            return
+</p>
+<p>
+        if tipe == "basic":
+</p>
+<p>
+            harga = 10000
+</p>
+<p>
+            transaksi.append(("Basic", harga))
+</p>
+<p>
+        elif tipe == "premium":
+</p>
+<p>
+            harga = 50000
+</p>
+<p>
+            transaksi.append(("Premium", harga))
+</p>
+<p>
+        elif tipe == "unknown":
+</p>
+<p>
+            if stok_unknown &gt; 0:
+</p>
+<p>
+                harga = 10000000
+</p>
+<p>
+                stok_unknown -= 1
+</p>
+<p>
+                transaksi.append(("UNKNOWN (LIMITED)", harga))
+</p>
+<p>
+            else:
+</p>
+<p>
+                messagebox.showinfo("Habis", "Kartu UNKNOWN sudah habis!")
+</p>
+<p>
+                return
+</p>
+<p>
+        listbox.insert(tk.END, f"{transaksi[-1][0]} - Rp{transaksi[-1][1]:,}")
+</p>
+<p>
+        total.set(total.get() + harga)
+</p>
+<p>
+    def reset():
+</p>
+<p>
+        global stok_unknown, transaksi
+</p>
+<p>
+        listbox.delete(0, tk.END)
+</p>
+<p>
+        total.set(0)
+</p>
+<p>
+        stok_unknown = 1
+</p>
+<p>
+        transaksi = []
+</p>
+<p>
+    def checkout():
+</p>
+<p>
+        if not transaksi:
+</p>
+<p>
+            messagebox.showwarning("Kosong", "Belum ada pembelian!")
+</p>
+<p>
+            return
+</p>
+<p>
+        file_name = "struk_pokemon.pdf"
+</p>
+<p>
+        c = canvas.Canvas(file_name, pagesize=letter)
+</p>
+<p>
+        c.setFont("Helvetica-Bold", 16)
+</p>
+<p>
+        c.drawString(180, 750, "STRUK TOKO KARTU POKEMON")
+</p>
+<p>
+        c.setFont("Helvetica", 12)
+</p>
+<p>
+        y = 700
+</p>
+<p>
+        total_harga = 0
+</p>
+<p>
+        for i, item in enumerate(transaksi, start=1):
+</p>
+<p>
+            nama, harga = item
+</p>
+<p>
+            c.drawString(50, y, f"{i}. {nama} - Rp{harga:,}")
+</p>
+<p>
+            y -= 20
+</p>
+<p>
+            total_harga += harga
+</p>
+<p>
+        c.setFont("Helvetica-Bold", 12)
+</p>
+<p>
+        c.drawString(50, y - 20, f"TOTAL: Rp{total_harga:,}")
+</p>
+<p>
+        c.save()
+</p>
+<p>
+        messagebox.showinfo("Checkout", f"Struk berhasil dibuat!\n{file_name}")
+</p>
+<p>
+    # === GUI ===
+</p>
+<p>
+    root = tk.Tk()
+</p>
+<p>
+    root.title("Toko Kartu Pokémon")
+</p>
+<p>
+    root.geometry("420x500")
+</p>
+<p>
+    tk.Label(root, text="TOKO KARTU POKEMON", font=("Arial", 16, "bold")).pack(pady=10)
+</p>
+<p>
+    var_tipe = tk.StringVar()
+</p>
+<p>
+    tk.Label(root, text="Pilih tipe kartu:").pack()
+</p>
+<p>
+    tk.Radiobutton(root, text="Basic (Rp10.000)", variable=var_tipe, value="basic").pack()
+</p>
+<p>
+    tk.Radiobutton(root, text="Premium (Rp50.000)", variable=var_tipe, value="premium").pack()
+</p>
+<p>
+    tk.Radiobutton(root, text="Unknown (Rp10.000.000 - 1x)", variable=var_tipe, value="unknown").pack()
+</p>
+<p>
+    tk.Button(root, text="Tambah Kartu", command=tambah_kartu).pack(pady=10)
+</p>
+<p>
+    listbox = tk.Listbox(root, width=50)
+</p>
+<p>
+    listbox.pack(pady=10)
+</p>
+<p>
+    total = tk.IntVar()
+</p>
+<p>
+    total.set(0)
+</p>
+<p>
+    tk.Label(root, text="Total Harga:").pack()
+</p>
+<p>
+    tk.Label(root, textvariable=total, font=("Arial", 14, "bold")).pack()
+</p>
+<p>
+    tk.Button(root, text="Checkout (Buat PDF)", command=checkout).pack(pady=5)
+</p>
+<p>
+    tk.Button(root, text="Reset", command=reset).pack(pady=5)
+</p>
+<p>
+    root.mainloop()
+</p>
